@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 function Attack25Board() {
   const size = 5;
@@ -15,7 +15,15 @@ function Attack25Board() {
   const [panels, setPanels] = useState(initialPanels());
   const [currentTeam, setCurrentTeam] = useState('red');
   const [history, setHistory] = useState([initialPanels()]);
-  const teamColors = ['red', 'blue', 'green', 'yellow'];
+  const [teamNames, setTeamNames] = useState({
+    red: 'Red Team',
+    blue: 'Blue Team',
+    green: 'Green Team',
+    yellow: 'Yellow Team'
+  });
+  const [winner, setWinner] = useState(null);
+
+  const teamColors = useMemo(() => ['red', 'blue', 'green', 'yellow'], []);
 
   const canFlipPanel = (row, col) => {
     if (panels[row][col].color !== null) return false;
@@ -66,41 +74,116 @@ function Attack25Board() {
     flipSurroundedPanels(newPanels, row, col, currentTeam);
     setPanels(newPanels);
     setHistory([...history, newPanels]);
+
+    if (newPanels.flat().every(panel => panel.color !== null)) {
+      declareWinner(newPanels);
+    }
   };
+
+  const declareWinner = useCallback((panels) => {
+    const colorCount = {};
+    teamColors.forEach(color => {
+      colorCount[color] = panels.flat().filter(panel => panel.color === color).length;
+    });
+
+    const maxCount = Math.max(...Object.values(colorCount));
+    const winningTeam = Object.keys(colorCount).find(color => colorCount[color] === maxCount);
+    setWinner(teamNames[winningTeam]);
+  }, [teamColors, teamNames]);
+
+  const handleReset = () => {
+    if (window.confirm('Resetしますか？')) {
+      setPanels(initialPanels());
+      setHistory([initialPanels()]);
+      setWinner(null);
+    }
+  };
+
+  const handleTeamNameChange = (color, name) => {
+    setTeamNames(prevNames => ({
+      ...prevNames,
+      [color]: name
+    }));
+  };
+
+  useEffect(() => {
+    if (panels.flat().every(panel => panel.color !== null)) {
+      declareWinner(panels);
+    }
+  }, [panels, declareWinner]);
 
   return (
     <div>
+      {winner && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            textAlign: 'center'
+          }}>
+            <h1>Congratulations! {winner} wins!</h1>
+            <button onClick={() => setWinner(null)}>OK</button>
+          </div>
+        </div>
+      )}
       <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
         {teamColors.map(color => (
-          <div
-            key={color}
-            onClick={() => setCurrentTeam(color)}
-            style={{
-              width: '50px',
-              height: '50px',
-              backgroundColor: color,
-              border: currentTeam === color ? '3px solid black' : '1px solid grey',
-              cursor: 'pointer'
-            }}
-          ></div>
+          <div key={color} style={{ textAlign: 'center' }}>
+            <div
+              onClick={() => setCurrentTeam(color)}
+              style={{
+                width: '50px',
+                height: '50px',
+                backgroundColor: color,
+                border: currentTeam === color ? '3px solid black' : '1px solid grey',
+                cursor: 'pointer',
+                marginBottom: '5px'
+              }}
+            ></div>
+            <input
+              type="text"
+              value={teamNames[color]}
+              onChange={(e) => handleTeamNameChange(color, e.target.value)}
+              style={{ width: '80px', textAlign: 'center' }}
+            />
+          </div>
         ))}
-        <button onClick={() => { setPanels(initialPanels()); setHistory([initialPanels()]); }}>Reset Game</button>
+        <button onClick={handleReset}>Reset</button>
         <button onClick={() => {
           if (history.length > 1) {
             setHistory(history.slice(0, -1));
             setPanels(history[history.length - 2]);
           }
-        }}>Undo Move</button>
+        }}>Undo</button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${size}, 50px)`, gap: '5px' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${size}, 1fr)`,
+        gap: '2px',
+        width: '100vw',
+        height: '100vh',
+        maxHeight: 'calc(100vh - 100px)'
+      }}>
         {panels.map((row, rowIndex) =>
           row.map((panel, colIndex) => (
             <div
               key={`${rowIndex}-${colIndex}`}
               onClick={() => handlePanelClick(rowIndex, colIndex)}
               style={{
-                width: '50px',
-                height: '50px',
+                width: '100%',
+                height: '100%',
                 backgroundColor: panel.color || (canFlipPanel(rowIndex, colIndex) ? 'lightgrey' : 'darkgrey'),
                 color: 'black',
                 display: 'flex',
