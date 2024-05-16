@@ -21,7 +21,8 @@ function Attack25Board() {
     green: 'Green Team',
     yellow: 'Yellow Team'
   });
-  const [winner, setWinner] = useState(null);
+  const [winners, setWinners] = useState(null);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const teamColors = useMemo(() => ['red', 'blue', 'green', 'yellow'], []);
 
@@ -59,8 +60,11 @@ function Attack25Board() {
       }
 
       if (r >= 0 && r < size && c >= 0 && c < size && newPanels[r][c].color === color) {
-        line.forEach(([lr, lc]) => {
-          newPanels[lr][lc].color = color;
+        line.forEach(([lr, lc], index) => {
+          setTimeout(() => {
+            newPanels[lr][lc].color = color;
+            setPanels([...newPanels]);
+          }, 500 * (index + 1));
         });
       }
     });
@@ -87,16 +91,28 @@ function Attack25Board() {
     });
 
     const maxCount = Math.max(...Object.values(colorCount));
-    const winningTeam = Object.keys(colorCount).find(color => colorCount[color] === maxCount);
-    setWinner(teamNames[winningTeam]);
+    const winningTeams = Object.keys(colorCount).filter(color => colorCount[color] === maxCount);
+
+    if (winningTeams.length > 1) {
+      setWinners(winningTeams.map(color => teamNames[color]).join(', '));
+    } else {
+      setWinners(teamNames[winningTeams[0]]);
+    }
   }, [teamColors, teamNames]);
 
   const handleReset = () => {
-    if (window.confirm('Resetしますか？')) {
-      setPanels(initialPanels());
-      setHistory([initialPanels()]);
-      setWinner(null);
-    }
+    setShowResetModal(true);
+  };
+
+  const confirmReset = () => {
+    setShowResetModal(false);
+    setPanels(initialPanels());
+    setHistory([initialPanels()]);
+    setWinners(null);
+  };
+
+  const cancelReset = () => {
+    setShowResetModal(false);
   };
 
   const handleTeamNameChange = (color, name) => {
@@ -114,7 +130,7 @@ function Attack25Board() {
 
   return (
     <div>
-      {winner && (
+      {winners && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -131,13 +147,83 @@ function Attack25Board() {
             backgroundColor: 'white',
             padding: '20px',
             borderRadius: '10px',
-            textAlign: 'center'
+            textAlign: 'center',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            animation: 'fadeIn 0.3s ease-in-out'
           }}>
-            <h1>Congratulations! {winner} wins!</h1>
-            <button onClick={() => setWinner(null)}>OK</button>
+            <h1>Congratulations! {winners} win{winners.includes(',') ? '' : 's'}!</h1>
+            <button
+              style={{
+                padding: '10px 20px',
+                margin: '10px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+              onClick={() => setWinners(null)}
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
+
+      {showResetModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            textAlign: 'center',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            animation: 'fadeIn 0.3s ease-in-out'
+          }}>
+            <h1>Resetしますか？</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+              <button
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+                onClick={confirmReset}
+              >
+                はい
+              </button>
+              <button
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#9e9e9e',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+                onClick={cancelReset}
+              >
+                いいえ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
         {teamColors.map(color => (
           <div key={color} style={{ textAlign: 'center' }}>
@@ -191,7 +277,8 @@ function Attack25Board() {
                 justifyContent: 'center',
                 border: panel.color ? '1px solid ' + panel.color : '1px dashed grey',
                 cursor: panel.color || !canFlipPanel(rowIndex, colIndex) ? 'not-allowed' : 'pointer',
-                fontWeight: panel.color ? 'bold' : 'normal'
+                fontWeight: panel.color ? 'bold' : 'normal',
+                transition: 'background-color 1s ease'
               }}
             >
               {panel.number}
