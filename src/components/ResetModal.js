@@ -1,5 +1,5 @@
 import React from 'react';
-import './ResetModal.css';
+import './style/ResetModal.css';
 
 function ResetModal({ confirmReset, cancelReset }) {
   return (

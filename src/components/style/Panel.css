@@ -1,0 +1,33 @@
+.panel {
+  width: 100%;
+  height: 100%;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  font-weight: normal;
+  transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.panel.can-flip {
+  border: 1px solid #888;
+  background-color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.panel.flipped {
+  font-weight: bold;
+  cursor: not-allowed;
+  background-color: #e0e0e0;
+  border: 1px solid #aaa;
+}
+
+.panel:not(.can-flip):not(.flipped):hover {
+  cursor: not-allowed;
+  background-color: #d0d0d0;
+  border-color: #999;
+}

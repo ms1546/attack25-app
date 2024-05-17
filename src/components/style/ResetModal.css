@@ -7,16 +7,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.7);
     z-index: 1000;
   }
 
   .modal-content {
-    background-color: white;
+    background-color: #222;
+    color: white;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
     animation: fadeIn 0.3s ease-in-out;
   }
 
@@ -28,18 +29,11 @@
 
   .button {
     padding: 10px 20px;
-    margin: 10px;
-    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: box-shadow 0.3s, transform 0.3s;
-  }
-
-  .button:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
   }
 
   .button.confirm {
@@ -48,4 +42,9 @@
 
   .button.cancel {
     background-color: #9e9e9e;
+  }
+
+  .button:hover {
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
   }

@@ -2,7 +2,7 @@ import React from 'react';
 import Panel from './Panel';
 import ResetModal from './ResetModal';
 import useAttack25 from '../hooks/useAttack25';
-import './Attack25Board.css';
+import './style/Attack25Board.css';
 
 function Attack25Board() {
   const {

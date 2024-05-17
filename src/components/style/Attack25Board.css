@@ -1,0 +1,64 @@
+.attack25-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #000;
+  min-height: 100vh;
+  color: white;
+  padding: 20px;
+}
+
+.team-selection {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.team {
+  text-align: center;
+}
+
+.team-color {
+  width: 50px;
+  height: 50px;
+  border: 1px solid grey;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.team-color.selected {
+  border: 3px solid white;
+}
+
+.team-input {
+  width: 80px;
+  text-align: center;
+  background-color: #444;
+  border: none;
+  color: white;
+}
+
+.button {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.button:hover {
+  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.board {
+  display: grid;
+  gap: 2px;
+  width: 90vw;
+  height: 90vh;
+  max-height: calc(100vh - 100px);
+  background-color: #000;
+}

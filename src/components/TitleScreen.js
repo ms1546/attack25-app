@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './TitleScreen.css';
+import './style/TitleScreen.css';
 
 function TitleScreen() {
   const navigate = useNavigate();
