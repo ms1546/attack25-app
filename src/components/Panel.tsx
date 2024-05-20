@@ -1,7 +1,16 @@
 import React from 'react';
 import './style/Panel.css';
 
-function Panel({ panel, canFlip, handleClick }) {
+interface PanelProps {
+  panel: {
+    color: string | null;
+    number: number | null;
+  };
+  canFlip: boolean;
+  handleClick: () => void;
+}
+
+const Panel: React.FC<PanelProps> = ({ panel, canFlip, handleClick }) => {
   return (
     <div
       className={`panel ${canFlip ? 'can-flip' : ''} ${panel.color ? 'flipped' : ''}`}

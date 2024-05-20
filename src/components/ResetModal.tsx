@@ -1,7 +1,12 @@
 import React from 'react';
 import './style/ResetModal.css';
 
-function ResetModal({ confirmReset, cancelReset }) {
+interface ResetModalProps {
+  confirmReset: () => void;
+  cancelReset: () => void;
+}
+
+const ResetModal: React.FC<ResetModalProps> = ({ confirmReset, cancelReset }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -15,4 +20,4 @@ function ResetModal({ confirmReset, cancelReset }) {
   );
 }
 
-export default ResetModal;
+export default ResetModal

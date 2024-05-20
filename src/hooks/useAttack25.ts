@@ -1,9 +1,19 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
-function useAttack25() {
+interface Panel {
+  color: string | null;
+  number: number | null;
+}
+
+interface TeamNames {
+  [key: string]: string;
+}
+
+const useAttack25 = () => {
   const size = 5;
-  const initialPanels = () => {
-    let panels = Array(size).fill(null).map(() => Array(size).fill({ color: null, number: null }));
+
+  const initialPanels = (): Panel[][] => {
+    let panels: Panel[][] = Array(size).fill(null).map(() => Array(size).fill({ color: null, number: null }));
     for (let i = 0, count = 1; i < size; i++) {
       for (let j = 0; j < size; j++) {
         panels[i][j] = { color: null, number: count++ };
@@ -12,21 +22,21 @@ function useAttack25() {
     return panels;
   };
 
-  const [panels, setPanels] = useState(initialPanels());
-  const [currentTeam, setCurrentTeam] = useState('red');
-  const [history, setHistory] = useState([initialPanels()]);
-  const [teamNames, setTeamNames] = useState({
+  const [panels, setPanels] = useState<Panel[][]>(initialPanels());
+  const [currentTeam, setCurrentTeam] = useState<string>('red');
+  const [history, setHistory] = useState<Panel[][][]>([initialPanels()]);
+  const [teamNames, setTeamNames] = useState<TeamNames>({
     red: 'Red Team',
     blue: 'Blue Team',
     green: 'Green Team',
     yellow: 'Yellow Team'
   });
-  const [winners, setWinners] = useState(null);
-  const [showResetModal, setShowResetModal] = useState(false);
+  const [winners, setWinners] = useState<string | null>(null);
+  const [showResetModal, setShowResetModal] = useState<boolean>(false);
 
   const teamColors = useMemo(() => ['red', 'blue', 'green', 'yellow'], []);
 
-  const canFlipPanel = (row, col) => {
+  const canFlipPanel = (row: number, col: number): boolean => {
     if (panels[row][col].color !== null) return false;
     if (history.length === 1) return true;
 
@@ -42,14 +52,14 @@ function useAttack25() {
     });
   };
 
-  const flipSurroundedPanels = (newPanels, row, col, color) => {
+  const flipSurroundedPanels = (newPanels: Panel[][], row: number, col: number, color: string) => {
     const directions = [
       [-1, 0], [1, 0], [0, -1], [0, 1],
       [-1, -1], [1, 1], [-1, 1], [1, -1]
     ];
 
     directions.forEach(([dRow, dCol]) => {
-      let line = [];
+      let line: [number, number][] = [];
       let r = row + dRow;
       let c = col + dCol;
 
@@ -70,7 +80,7 @@ function useAttack25() {
     });
   };
 
-  const handlePanelClick = (row, col) => {
+  const handlePanelClick = (row: number, col: number) => {
     if (panels[row][col].color !== null || !canFlipPanel(row, col)) return;
 
     const newPanels = panels.map(row => row.map(panel => ({ ...panel })));
@@ -84,8 +94,8 @@ function useAttack25() {
     }
   };
 
-  const declareWinner = useCallback((panels) => {
-    const colorCount = {};
+  const declareWinner = useCallback((panels: Panel[][]) => {
+    const colorCount: { [key: string]: number } = {};
     teamColors.forEach(color => {
       colorCount[color] = panels.flat().filter(panel => panel.color === color).length;
     });
@@ -115,7 +125,7 @@ function useAttack25() {
     setShowResetModal(false);
   };
 
-  const handleTeamNameChange = (color, name) => {
+  const handleTeamNameChange = (color: string, name: string) => {
     setTeamNames(prevNames => ({
       ...prevNames,
       [color]: name

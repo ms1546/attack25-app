@@ -4,7 +4,7 @@ import ResetModal from './ResetModal';
 import useAttack25 from '../hooks/useAttack25';
 import './style/Attack25Board.css';
 
-function Attack25Board() {
+const Attack25Board: React.FC = () => {
   const {
     panels,
     currentTeam,
