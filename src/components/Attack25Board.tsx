@@ -31,8 +31,12 @@ const Attack25Board: React.FC = () => {
       {winners && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h1>Congratulations! {winners} win{winners.includes(',') ? '' : 's'}!</h1>
-            <button className="button" onClick={() => setWinners(null)}>OK</button>
+            <h1>
+              Congratulations! {winners} win{winners.includes(',') ? '' : 's'}!
+            </h1>
+            <button className="button" onClick={() => setWinners(null)}>
+              OK
+            </button>
           </div>
         </div>
       )}
@@ -42,10 +46,12 @@ const Attack25Board: React.FC = () => {
       )}
 
       <div className="team-selection">
-        {teamColors.map(color => (
+        {teamColors.map((color) => (
           <div key={color} className="team">
             <div
-              className={`team-color ${currentTeam === color ? 'selected' : ''}`}
+              className={`team-color ${
+                currentTeam === color ? 'selected' : ''
+              }`}
               style={{ backgroundColor: color }}
               onClick={() => setCurrentTeam(color)}
             ></div>
@@ -57,15 +63,25 @@ const Attack25Board: React.FC = () => {
             />
           </div>
         ))}
-        <button className="button" onClick={handleReset}>Reset</button>
-        <button className="button" onClick={() => {
-          if (history.length > 1) {
-            setHistory(history.slice(0, -1));
-            setPanels(history[history.length - 2]);
-          }
-        }}>Undo</button>
+        <button className="button" onClick={handleReset}>
+          Reset
+        </button>
+        <button
+          className="button"
+          onClick={() => {
+            if (history.length > 1) {
+              setHistory(history.slice(0, -1));
+              setPanels(history[history.length - 2]);
+            }
+          }}
+        >
+          Undo
+        </button>
       </div>
-      <div className="board" style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}>
+      <div
+        className="board"
+        style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
+      >
         {panels.map((row, rowIndex) =>
           row.map((panel, colIndex) => (
             <Panel
@@ -74,11 +90,11 @@ const Attack25Board: React.FC = () => {
               canFlip={canFlipPanel(rowIndex, colIndex)}
               handleClick={() => handlePanelClick(rowIndex, colIndex)}
             />
-          ))
+          )),
         )}
       </div>
     </div>
   );
-}
+};
 
 export default Attack25Board;

@@ -41,12 +41,14 @@
 .button {
   padding: 10px 20px;
   margin: 10px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: box-shadow 0.3s, transform 0.3s;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
 }
 
 .button:hover {

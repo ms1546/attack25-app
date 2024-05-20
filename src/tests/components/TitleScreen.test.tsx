@@ -1,14 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import userEvent from '@testing-library/user-event';
 import TitleScreen from '../../components/TitleScreen';
-import { waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
-test('renders title and start button', () => {
+test('renders Attack 25 title and start button', () => {
   render(
-    <MemoryRouter initialEntries={['/']}>
+    <MemoryRouter>
       <TitleScreen />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
   expect(screen.getByText('Attack 25')).toBeInTheDocument();
@@ -22,12 +22,9 @@ test('navigates to game on start button click', async () => {
         <Route path="/" element={<TitleScreen />} />
         <Route path="/game" element={<div>Game Page</div>} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
-  userEvent.click(screen.getByText('進む'));
-
-  screen.debug();
-
-  await waitFor(() => expect(screen.getByText('Game Page')).toBeInTheDocument());
+  fireEvent.click(screen.getByText('進む'));
+  expect(await screen.findByText('Game Page')).toBeInTheDocument();
 });

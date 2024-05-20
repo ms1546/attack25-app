@@ -1,5 +1,7 @@
 # 25 app
+
 ## Rules
+
 1. Turns:
 
 Players take turns in the order of their team colors (e.g., red, blue, green, yellow).
@@ -18,6 +20,6 @@ Any surrounded panels are flipped to the claiming player's color.
 
 A panel can only be claimed if it is adjacent to a panel that has already been claimed (except the first panel).
 
-5. ***Winner:***
+5. **_Winner:_**
 
 The team with the most panels of their color when all panels are claimed.
