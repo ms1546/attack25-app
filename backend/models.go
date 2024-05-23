@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/golang-jwt/jwt/v3"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type User struct {

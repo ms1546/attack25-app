@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v3"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 )
