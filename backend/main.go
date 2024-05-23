@@ -19,6 +19,7 @@ func main() {
 	router.HandleFunc("/api/login", login).Methods("POST")
 	router.HandleFunc("/api/refresh", refresh).Methods("POST")
 
+	// 認証が必要なエンドポイント
 	authRouter := router.PathPrefix("/api").Subrouter()
 	authRouter.Use(authMiddleware)
 	authRouter.HandleFunc("/questions", getQuestions).Methods("GET")
@@ -26,6 +27,14 @@ func main() {
 	authRouter.HandleFunc("/questions/{id}", getQuestion).Methods("GET")
 	authRouter.HandleFunc("/questions/{id}", updateQuestion).Methods("PUT")
 	authRouter.HandleFunc("/questions/{id}", deleteQuestion).Methods("DELETE")
+
+	staticFileDirectory := http.Dir("./static")
+	staticFileHandler := http.StripPrefix("/static/", http.FileServer(staticFileDirectory))
+	router.PathPrefix("/static/").Handler(staticFileHandler)
+
+	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./static/index.html")
+	})
 
 	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
 
