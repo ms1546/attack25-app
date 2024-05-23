@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func authMiddleware(next http.Handler) http.Handler {
