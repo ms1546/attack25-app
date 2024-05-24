@@ -15,25 +15,26 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ addQuestion }) => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newQuestion = { id: Date.now(), question, answer };
 
-    fetch('/api/questions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newQuestion),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        addQuestion(data);
-        setQuestion('');
-        setAnswer('');
-      })
-      .catch((error) => console.error('Error:', error));
+    try {
+      const response = await fetch('/api/questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newQuestion),
+      });
+      const data = await response.json();
+      addQuestion(data);
+      setQuestion('');
+      setAnswer('');
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (

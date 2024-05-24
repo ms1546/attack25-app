@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import QuestionForm from '../../components/QuestionForm';
+import { render, screen } from '@testing-library/react';
+import AdminDashboard from '../../components/AdminDashboard';
 
-describe('QuestionForm', () => {
+describe('AdminDashboard', () => {
   beforeAll(() => {
     global.fetch = jest.fn();
   });
@@ -10,42 +10,21 @@ describe('QuestionForm', () => {
     (global.fetch as jest.Mock).mockClear();
   });
 
-  it('renders QuestionForm component', () => {
-    const addQuestionMock = jest.fn();
-    render(<QuestionForm addQuestion={addQuestionMock} />);
-
-    expect(screen.getByLabelText('Question:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Answer:')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Add Question/i })).toBeInTheDocument();
-  });
-
-  it('submits form with valid data', async () => {
-    const addQuestionMock = jest.fn();
-    const mockResponse = { id: 1, question: 'New Question', answer: 'New Answer' };
+  it('fetches and displays questions', async () => {
+    const mockResponse = [
+      { id: 1, question: 'Sample Question 1', answer: 'Sample Answer 1' },
+      { id: 2, question: 'Sample Question 2', answer: 'Sample Answer 2' },
+    ];
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       json: jest.fn().mockResolvedValueOnce(mockResponse),
     });
 
-    render(<QuestionForm addQuestion={addQuestionMock} />);
+    render(<AdminDashboard />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
-      fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
-      fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
-    });
+    expect(await screen.findByText('Sample Question 1 - Sample Answer 1')).toBeInTheDocument();
+    expect(await screen.findByText('Sample Question 2 - Sample Answer 2')).toBeInTheDocument();
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
-    expect(global.fetch).toHaveBeenCalledWith('/api/questions', expect.objectContaining({
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: expect.stringContaining('"question":"New Question"'),
-      body: expect.stringContaining('"answer":"New Answer"'),
-    }));
-
-    await act(async () => {
-    });
-
-    expect(addQuestionMock).toHaveBeenCalledTimes(1);
-    expect(addQuestionMock).toHaveBeenCalledWith(mockResponse);
+    expect(global.fetch).toHaveBeenCalledWith('/api/questions', { method: 'GET', headers: { 'Content-Type': 'application/json' } });
   });
 });

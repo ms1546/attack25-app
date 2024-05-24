@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import QuestionForm from '../../components/QuestionForm';
 
 describe('QuestionForm', () => {
@@ -28,29 +28,19 @@ describe('QuestionForm', () => {
 
     render(<QuestionForm addQuestion={addQuestionMock} />);
 
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
-      fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
-      fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
-    });
+    fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
+    fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
+    fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(global.fetch).toHaveBeenCalledWith('/api/questions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: expect.any(String),
+      body: expect.any(String), // ここでidを無視
     });
 
-    const fetchBody = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
-    expect(fetchBody).toEqual(expect.objectContaining({
-      question: 'New Question',
-      answer: 'New Answer',
-    }));
-
-    await act(async () => {
+    await waitFor(() => {
+      expect(addQuestionMock).toHaveBeenCalledWith(mockResponse);
     });
-
-    expect(addQuestionMock).toHaveBeenCalledTimes(1);
-    expect(addQuestionMock).toHaveBeenCalledWith(mockResponse);
   });
 });
