@@ -12,7 +12,10 @@ interface QuestionListProps {
   deleteQuestion: (id: number) => void;
 }
 
-const QuestionList: React.FC<QuestionListProps> = ({ questions, deleteQuestion }) => {
+const QuestionList: React.FC<QuestionListProps> = ({
+  questions,
+  deleteQuestion,
+}) => {
   const handleDelete = (id: number) => {
     fetch(`/api/questions/${id}`, {
       method: 'DELETE',
