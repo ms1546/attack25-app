@@ -1,49 +1,51 @@
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import AdminDashboard from '../../components/AdminDashboard';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import QuestionForm from '../../components/QuestionForm';
 
-jest.mock('../../components/QuestionForm', () => ({
-  __esModule: true,
-  default: function DummyQuestionForm(props: any) {
-    return <div>QuestionForm Component</div>;
-  },
-}));
+describe('QuestionForm', () => {
+  beforeAll(() => {
+    global.fetch = jest.fn();
+  });
 
-jest.mock('../../components/QuestionList', () => ({
-  __esModule: true,
-  default: function DummyQuestionList(props: any) {
-    return <div>QuestionList Component</div>;
-  },
-}));
-
-describe('AdminDashboard', () => {
   beforeEach(() => {
-    fetchMock.resetMocks();
+    (global.fetch as jest.Mock).mockClear();
   });
 
-  test('renders AdminDashboard component', async () => {
-    fetchMock.mockResponseOnce(JSON.stringify([]));
+  it('renders QuestionForm component', () => {
+    const addQuestionMock = jest.fn();
+    render(<QuestionForm addQuestion={addQuestionMock} />);
 
-    render(<AdminDashboard />);
-
-    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('QuestionForm Component')).toBeInTheDocument();
-    expect(screen.getByText('QuestionList Component')).toBeInTheDocument();
+    expect(screen.getByLabelText('Question:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Answer:')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Add Question/i })).toBeInTheDocument();
   });
 
-  test('fetches and displays questions', async () => {
-    const questions = [
-      { id: 1, question: 'Sample Question 1', answer: 'Sample Answer 1' },
-      { id: 2, question: 'Sample Question 2', answer: 'Sample Answer 2' },
-    ];
-    fetchMock.mockResponseOnce(JSON.stringify(questions));
-
-    render(<AdminDashboard />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Sample Question 1 - Sample Answer 1')).toBeInTheDocument();
-      expect(screen.getByText('Sample Question 2 - Sample Answer 2')).toBeInTheDocument();
+  it('submits form with valid data', async () => {
+    const addQuestionMock = jest.fn();
+    const mockResponse = { id: 1, question: 'New Question', answer: 'New Answer' };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValueOnce(mockResponse),
     });
+
+    render(<QuestionForm addQuestion={addQuestionMock} />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
+      fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
+      fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledWith('/api/questions', expect.objectContaining({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: expect.stringContaining('"question":"New Question"'),
+      body: expect.stringContaining('"answer":"New Answer"'),
+    }));
+
+    await act(async () => {
+    });
+
+    expect(addQuestionMock).toHaveBeenCalledTimes(1);
+    expect(addQuestionMock).toHaveBeenCalledWith(mockResponse);
   });
 });

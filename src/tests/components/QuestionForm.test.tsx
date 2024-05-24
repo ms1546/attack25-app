@@ -1,12 +1,17 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import QuestionForm from '../../components/QuestionForm';
 
 describe('QuestionForm', () => {
-  const addQuestionMock = jest.fn();
+  beforeAll(() => {
+    global.fetch = jest.fn();
+  });
 
-  test('renders QuestionForm component', () => {
+  beforeEach(() => {
+    (global.fetch as jest.Mock).mockClear();
+  });
+
+  it('renders QuestionForm component', () => {
+    const addQuestionMock = jest.fn();
     render(<QuestionForm addQuestion={addQuestionMock} />);
 
     expect(screen.getByLabelText('Question:')).toBeInTheDocument();
@@ -14,13 +19,38 @@ describe('QuestionForm', () => {
     expect(screen.getByRole('button', { name: /Add Question/i })).toBeInTheDocument();
   });
 
-  test('submits form with valid data', () => {
+  it('submits form with valid data', async () => {
+    const addQuestionMock = jest.fn();
+    const mockResponse = { id: 1, question: 'New Question', answer: 'New Answer' };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValueOnce(mockResponse),
+    });
+
     render(<QuestionForm addQuestion={addQuestionMock} />);
 
-    fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
-    fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
-    fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
+      fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
+      fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
+    });
 
-    expect(addQuestionMock).toHaveBeenCalledWith({ id: expect.any(Number), question: 'New Question', answer: 'New Answer' });
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledWith('/api/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: expect.any(String),
+    });
+
+    const fetchBody = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
+    expect(fetchBody).toEqual(expect.objectContaining({
+      question: 'New Question',
+      answer: 'New Answer',
+    }));
+
+    await act(async () => {
+    });
+
+    expect(addQuestionMock).toHaveBeenCalledTimes(1);
+    expect(addQuestionMock).toHaveBeenCalledWith(mockResponse);
   });
 });
