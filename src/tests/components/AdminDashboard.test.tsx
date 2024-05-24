@@ -21,10 +21,17 @@ describe('AdminDashboard', () => {
 
     render(<AdminDashboard />);
 
-    expect(await screen.findByText('Sample Question 1 - Sample Answer 1')).toBeInTheDocument();
-    expect(await screen.findByText('Sample Question 2 - Sample Answer 2')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Sample Question 1 - Sample Answer 1'),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('Sample Question 2 - Sample Answer 2'),
+    ).toBeInTheDocument();
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
-    expect(global.fetch).toHaveBeenCalledWith('/api/questions', { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+    expect(global.fetch).toHaveBeenCalledWith('/api/questions', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
   });
 });

@@ -16,20 +16,30 @@ describe('QuestionForm', () => {
 
     expect(screen.getByLabelText('Question:')).toBeInTheDocument();
     expect(screen.getByLabelText('Answer:')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Add Question/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Add Question/i }),
+    ).toBeInTheDocument();
   });
 
   it('submits form with valid data', async () => {
     const addQuestionMock = jest.fn();
-    const mockResponse = { id: 1, question: 'New Question', answer: 'New Answer' };
+    const mockResponse = {
+      id: 1,
+      question: 'New Question',
+      answer: 'New Answer',
+    };
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       json: jest.fn().mockResolvedValueOnce(mockResponse),
     });
 
     render(<QuestionForm addQuestion={addQuestionMock} />);
 
-    fireEvent.change(screen.getByLabelText('Question:'), { target: { value: 'New Question' } });
-    fireEvent.change(screen.getByLabelText('Answer:'), { target: { value: 'New Answer' } });
+    fireEvent.change(screen.getByLabelText('Question:'), {
+      target: { value: 'New Question' },
+    });
+    fireEvent.change(screen.getByLabelText('Answer:'), {
+      target: { value: 'New Answer' },
+    });
     fireEvent.click(screen.getByRole('button', { name: /Add Question/i }));
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
