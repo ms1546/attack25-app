@@ -28,7 +28,7 @@ jobs:
         run: npm run lint
 
       - name: Check Prettier formatting
-        run: npm run format:check
+        run: npm run format:check --loglevel warn
 
       - name: Run Node.js tests
         run: npm test
@@ -45,6 +45,9 @@ jobs:
         with:
           go-version: '1.18'
 
+      - name: Change directory to backend
+        run: cd backend
+
       - name: Install Go dependencies
         run: go mod tidy
 
@@ -55,4 +58,4 @@ jobs:
         run: golangci-lint run
 
       - name: Run Go tests
-        run: go test -v ./backend/...
+        run: go test -v ./...
