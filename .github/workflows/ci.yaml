@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build:
+  frontend:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,14 +21,38 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install dependencies
+      - name: Install Node.js dependencies
         run: npm install
 
-      - name: Run Lint
+      - name: Run Node.js Lint
         run: npm run lint
 
       - name: Check Prettier formatting
         run: npm run format:check
 
-      - name: Run tests
+      - name: Run Node.js tests
         run: npm test
+
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.18'
+
+      - name: Install Go dependencies
+        run: go mod tidy
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Run Go Linter
+        run: golangci-lint run
+
+      - name: Run Go tests
+        run: go test -v ./backend/...

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -12,7 +13,9 @@ import (
 
 func getQuestions(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(questions)
+	if err := json.NewEncoder(w).Encode(questions); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func createQuestion(w http.ResponseWriter, r *http.Request) {
@@ -21,52 +24,69 @@ func createQuestion(w http.ResponseWriter, r *http.Request) {
 	question.ID = len(questions) + 1
 	questions = append(questions, question)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(question)
+	if err := json.NewEncoder(w).Encode(question); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func getQuestion(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"])
 	for _, item := range questions {
-		if string(item.ID) == params["id"] {
+		if item.ID == id {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(item)
+			if err := json.NewEncoder(w).Encode(item); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Question not found"})
+	if err := json.NewEncoder(w).Encode(map[string]string{"message": "Question not found"}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func updateQuestion(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"])
 	for index, item := range questions {
-		if string(item.ID) == params["id"] {
+		if item.ID == id {
 			questions = append(questions[:index], questions[index+1:]...)
 			var question Question
 			_ = json.NewDecoder(r.Body).Decode(&question)
 			question.ID = item.ID
 			questions = append(questions, question)
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(question)
+			if err := json.NewEncoder(w).Encode(question); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Question not found"})
+	if err := json.NewEncoder(w).Encode(map[string]string{"message": "Question not found"}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func deleteQuestion(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"])
 	for index, item := range questions {
-		if string(item.ID) == params["id"] {
+		if item.ID == id {
 			questions = append(questions[:index], questions[index+1:]...)
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{"message": "Question deleted"})
+			if err := json.NewEncoder(w).Encode(map[string]string{"message": "Question deleted"}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Question not found"})
+	if err := json.NewEncoder(w).Encode(map[string]string{"message": "Question not found"}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +133,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(10 * time.Second) // 短い有効期限に設定
 	claims := &Claims{
 		Username: creds.Username,
 		StandardClaims: jwt.StandardClaims{
@@ -167,7 +187,8 @@ func refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
+	// トークンの期限を確認し、期限が30秒未満の場合にリフレッシュを許可
+	if time.Until(time.Unix(claims.ExpiresAt, 0)) > 30*time.Second {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
