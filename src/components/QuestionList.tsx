@@ -1,5 +1,4 @@
 import React from 'react';
-import './style/AdminDashboard.css';
 
 interface Question {
   id: number;
@@ -12,35 +11,20 @@ interface QuestionListProps {
   deleteQuestion: (id: number) => void;
 }
 
-const QuestionList: React.FC<QuestionListProps> = ({
-  questions,
-  deleteQuestion,
-}) => {
-  const handleDelete = (id: number) => {
-    fetch(`/api/questions/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          deleteQuestion(id);
-        } else {
-          console.error('Failed to delete question');
-        }
-      })
-      .catch((error) => console.error('Error:', error));
-  };
-
+const QuestionList: React.FC<QuestionListProps> = ({ questions, deleteQuestion }) => {
   return (
-    <div className="question-list">
-      <h2>Question List</h2>
-      <ul>
+    <div className="mb-8">
+      <h2 className="text-center text-xl font-semibold text-gray-800 mb-4">Questions</h2>
+      <ul className="list-none p-0">
         {questions.map((question) => (
-          <li key={question.id}>
-            {question.question} - {question.answer}
-            <button onClick={() => handleDelete(question.id)}>Delete</button>
+          <li key={question.id} className="flex justify-between items-center p-2 border-b border-gray-300">
+            <span>{question.question}</span>
+            <button
+              onClick={() => deleteQuestion(question.id)}
+              className="p-1 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600"
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
