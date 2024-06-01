@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuestionForm from './QuestionForm';
 import QuestionList from './QuestionList';
-import './style/AdminDashboard.css';
 
 interface Question {
   id: number;
@@ -33,10 +32,12 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="admin-dashboard">
-      <h1>Admin Dashboard</h1>
-      <QuestionForm addQuestion={addQuestion} />
-      <QuestionList questions={questions} deleteQuestion={deleteQuestion} />
+    <div className="p-8 font-sans">
+      <div className="max-w-2xl mx-auto bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
+        <h1 className="text-center text-2xl font-bold text-gray-800 mb-4">Admin Dashboard</h1>
+        <QuestionForm addQuestion={addQuestion} />
+        <QuestionList questions={questions} deleteQuestion={deleteQuestion} />
+      </div>
     </div>
   );
 };
