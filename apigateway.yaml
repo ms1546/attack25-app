@@ -1,0 +1,51 @@
+# AWSTemplateFormatVersion: '2010-09-09'
+# Resources:
+#   MyApi:
+#     Type: AWS::ApiGateway::RestApi
+#     Properties:
+#       Name: my-api
+
+#   MyResource:
+#     Type: AWS::ApiGateway::Resource
+#     Properties:
+#       ParentId:
+#         Fn::GetAtt:
+#           - MyApi
+#           - RootResourceId
+#       PathPart: "myresource"
+#       RestApiId:
+#         Ref: MyApi
+
+#   MyMethod:
+#     Type: AWS::ApiGateway::Method
+#     Properties:
+#       AuthorizationType: NONE
+#       HttpMethod: GET
+#       ResourceId:
+#         Ref: MyResource
+#       RestApiId:
+#         Ref: MyApi
+#       Integration:
+#         IntegrationHttpMethod: POST
+#         Type: AWS_PROXY
+#         Uri:
+#           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambda.Arn}/invocations
+
+#   MyLambda:
+#     Type: AWS::Lambda::Function
+#     Properties:
+#       FunctionName: myLambdaFunction
+#       Handler: main
+#       Role: arn:aws:iam::123456789012:role/execution_role
+#       Runtime: go1.x
+#       Code:
+#         S3Bucket: my-bucket
+#         S3Key: my-key.zip
+
+#   MyLambdaPermission:
+#     Type: AWS::Lambda::Permission
+#     Properties:
+#       FunctionName:
+#         Ref: MyLambda
+#       Action: lambda:InvokeFunction
+#       Principal: apigateway.amazonaws.com
