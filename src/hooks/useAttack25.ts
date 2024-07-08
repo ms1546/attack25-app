@@ -10,7 +10,7 @@ interface TeamNames {
 }
 
 const useAttack25 = () => {
-  const size = 5;
+  const size = 4;
 
   const initialPanels = (): Panel[][] => {
     let panels: Panel[][] = Array(size)

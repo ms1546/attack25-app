@@ -3,8 +3,9 @@ import useAttack25 from '../../hooks/useAttack25';
 
 test('initializes panels correctly', () => {
   const { result } = renderHook(() => useAttack25());
-  expect(result.current.panels.length).toBe(5);
-  expect(result.current.panels[0].length).toBe(5);
+  expect(result.current.panels.length).toBe(4);
+  expect(result.current.panels[0].length).toBe(4
+  );
   expect(result.current.panels[0][0].number).toBe(1);
 });
 
