@@ -38,20 +38,20 @@ const useAttack25 = () => {
 
   const teamColors = useMemo(() => ['red', 'blue', 'green', 'yellow'], []);
 
+  const directions = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+  ];
   const canFlipPanel = (row: number, col: number): boolean => {
     if (panels[row][col].color !== null) return false;
     if (history.length === 1) return true;
 
-    const directions = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-    ];
     return directions.some(([dRow, dCol]) => {
       const r = row + dRow;
       const c = col + dCol;
@@ -67,17 +67,6 @@ const useAttack25 = () => {
     col: number,
     color: string,
   ) => {
-    const directions = [
-      [-1, 0],
-      [1, 0],
-      [0, -1],
-      [0, 1],
-      [-1, -1],
-      [1, 1],
-      [-1, 1],
-      [1, -1],
-    ];
-
     directions.forEach(([dRow, dCol]) => {
       let line: [number, number][] = [];
       let r = row + dRow;
