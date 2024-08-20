@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import './style/TitleScreen.css';
+
 const TitleScreen = () => {
   const navigate = useNavigate();
 
@@ -8,9 +8,12 @@ const TitleScreen = () => {
   };
 
   return (
-    <div className="title-screen">
-      <h1 className="title">Attack 25</h1>
-      <button className="start-button" onClick={handleStartClick}>
+    <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+      <h1 className="text-4xl font-bold mb-8">Attack 25</h1>
+      <button
+        className="px-6 py-4 bg-green-500 text-white text-lg rounded hover:bg-green-600"
+        onClick={handleStartClick}
+      >
         進む
       </button>
     </div>

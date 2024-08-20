@@ -1,24 +1,26 @@
 import React from 'react';
-import './style/ResetModal.css';
 
 interface ResetModalProps {
   confirmReset: () => void;
   cancelReset: () => void;
 }
 
-const ResetModal: React.FC<ResetModalProps> = ({
-  confirmReset,
-  cancelReset,
-}) => {
+const ResetModal: React.FC<ResetModalProps> = ({ confirmReset, cancelReset }) => {
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h1>Resetしますか？</h1>
-        <div className="modal-buttons">
-          <button className="button confirm" onClick={confirmReset}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+      <div className="bg-gray-900 text-white p-8 rounded-lg text-center shadow-lg">
+        <h1 className="text-2xl mb-4">Resetしますか？</h1>
+        <div className="flex justify-center gap-4">
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={confirmReset}
+          >
             はい
           </button>
-          <button className="button cancel" onClick={cancelReset}>
+          <button
+            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            onClick={cancelReset}
+          >
             いいえ
           </button>
         </div>
